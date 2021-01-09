@@ -2,14 +2,18 @@ Comando para habilitar configuración en zsh.
 
 Ojo no hagas esto con root
 Hazlo con Kali
-Si quieres agrear los a root con links simbólicos será suficiente
+Si quieres agregar esta configuracion a root con links simbólicos será suficiente
 
-Descárgalo en /home/Kali
+Descárga todo en la ruta /home/Kali
 O lo mueves a con el comando “ mv  Kali.zip  ~  ”
 Cd  ~
 Unzip  Kali.zip
 Sudo  dpkg  -i  *.deb
+
 rm  Kali.zip  *.deb
+
+
+con estos comandos instalaremos la hack nerd font en nuestro os
 
 mkdir   ~/.fonts
 
@@ -21,9 +25,7 @@ unzip Hack.zip
 
 rm Hack.zip
 
-desde configurar en tu  emulado de terminal las la fuente hack nerd Font mono regular 
-
-
+desde configuracion en tu  emulador de terminal debes de configurar la fuente hack nerd Font mono regular 
 
 y listo!!
 
@@ -36,3 +38,7 @@ Update
 Upgrade
 Instalar
 Autopwn
+hostedit
+dnsorden
+dnsedit
+intedit
