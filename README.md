@@ -27,6 +27,8 @@ rm Hack.zip
 
 desde configuracion en tu  emulador de terminal debes de configurar la fuente hack nerd Font mono regular 
 
+https://github.com/Sn0wFreeze/.ZSHRC/blob/main/qterminal.png
+
 y listo!!
 
 Comandos personalizados:
