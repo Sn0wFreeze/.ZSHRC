@@ -304,7 +304,7 @@ function htb(){
 
 if ! $(ip add show tun0 >> /dev/null); then
 
-	sudo openvpn --config ${HOME}/Documents/Sn0wFreeze.ovpn --daemon
+	sudo openvpn --config ${HOME}/Documents/*.ovpn --daemon
 
 	if [[ $(ip add show tun0 > /dev/null) ]]; then
 
