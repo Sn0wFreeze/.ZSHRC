@@ -24,7 +24,7 @@ sudo chsh -s $(which zsh)
 
 luego descargar el tema y configuracion de powerlevel10k
 
-mv powerlevel10k.zip ~\.oh-my-zsh\custom\themes && unzip powerlevel10k.zip && rm -rf powerlevel10k.zip
+mv powerlevel10k.zip ~/.oh-my-zsh/custom/themes && unzip powerlevel10k.zip && rm -rf powerlevel10k.zip
 
 wget https://github.com/sharkdp/bat/releases/download/v0.17.1/bat_0.17.1_amd64.deb
 
