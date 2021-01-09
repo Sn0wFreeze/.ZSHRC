@@ -22,7 +22,7 @@ fetch sh -c "$(fetch -o - https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/mast
 
 sudo chsh -s $(which zsh)
 
-luego descargar el tema y configuracion de powerlevel10k
+luego descargar el tema y configuracion de powerlevel10k el cual esta comprimido *.zip
 
 mv powerlevel10k.zip ~/.oh-my-zsh/custom/themes && unzip powerlevel10k.zip && rm -rf powerlevel10k.zip
 
