@@ -6,16 +6,18 @@ Si quieres agregar esta configuracion a root con links simbólicos será suficie
 
 Descárga todo en la ruta /home/Kali
 
-instalaremos oh-my-zshcon los siguientes comandos.
+instalaremos oh-my-zsh con los siguientes comandos.
 estos son los diferentes metodos.
 Method	  Command
-curl	  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-wget	  sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-fetch	  sh -c "$(fetch -o - https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+curl sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+wget sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fetch sh -c "$(fetch -o - https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 sudo chsh -s $(which zsh)
 
+luego descargar el tema y configuracion de powerlevel10k
 
+mv powerlevel10k.zip ~\.oh-my-zsh\custom\themes && unzip powerlevel10k.zip && rm -rf powerlevel10k.zip
 
 wget https://github.com/sharkdp/bat/releases/download/v0.17.1/bat_0.17.1_amd64.deb
 
@@ -30,9 +32,9 @@ rm   *.deb
 
 con estos comandos instalaremos la hack nerd font en nuestro os
 
-mkdir   ~/.fonts
+mkdir ~/.fonts
 
-cd     ~/.fonts
+cd  ~/.fonts
 
 wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/Hack.zip
 
@@ -43,6 +45,8 @@ rm Hack.zip
 desde configuracion en tu  emulador de terminal debes de configurar la fuente hack nerd Font mono regular 
 
 https://github.com/Sn0wFreeze/.ZSHRC/blob/main/qterminal.png
+
+favor colocar el archivo *.opvn en la carpeta Documents para que el comando htb funcione correctamente.
 
 y listo!!
 
