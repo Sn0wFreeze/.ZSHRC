@@ -5,12 +5,27 @@ Hazlo con Kali
 Si quieres agregar esta configuracion a root con links simbólicos será suficiente
 
 Descárga todo en la ruta /home/Kali
-O lo mueves a con el comando “ mv  Kali.zip  ~  ”
-Cd  ~
-Unzip  Kali.zip
+
+instalaremos oh-my-zshcon los siguientes comandos.
+
+Method	  Command
+curl	    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+wget	    sh -c "$(wget -O- https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fetch	    sh -c "$(fetch -o - https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+sudo chsh -s $(which zsh)
+
+
+
+wget https://github.com/sharkdp/bat/releases/download/v0.17.1/bat_0.17.1_amd64.deb
+
+wget https://github.com/Peltoche/lsd/releases/download/0.19.0/lsd_0.19.0_amd64.deb
+
 Sudo  dpkg  -i  *.deb
 
-rm  Kali.zip  *.deb
+sudo apt install -y fzf
+
+rm   *.deb
 
 
 con estos comandos instalaremos la hack nerd font en nuestro os
