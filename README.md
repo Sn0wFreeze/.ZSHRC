@@ -55,6 +55,15 @@ https://github.com/Sn0wFreeze/.ZSHRC/blob/main/qterminal.png
 
 favor colocar el archivo *.opvn en la carpeta Documents para que el comando htb funcione correctamente.
 
+sudo su -
+
+configuracion root con links simbólicos:
+
+ln -s /home/kali/.fonts .fonts
+
+ln -s /home/kali/.oh-my-zsh .oh-my-zsh
+
+ln -s /home/kali/.zshrc .zshrc
 
 
 y listo!!
