@@ -354,13 +354,13 @@ REPORT="${DIR}/${2}.report.txt"
 
 		sudo nmap -A -Pn -sS -sV -oA ${2} --script default,vuln ${1} | tee --append ${REPORT};
 
-		if [[ $(fgrep commonName ${REPORT} > /dev/null) ]]; then
+		if $(fgrep commonName ${REPORT} > /dev/null); then
 
 			DOMINIO=$( fgrep commonName ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
 
 			echo 'hemos detectado algo de interes, si es un dominio utiliza el comando (sudo echo ${1} ${DOMINIO} >> /etc/hosts)' | tee --append ${REPORT};
 
-			if [[ $(fgrep "Subject Alternative Name:" ${REPORT} > /dev/null) ]]; then
+			if $(fgrep "Subject Alternative Name:" ${REPORT} > /dev/null) ; then
 
 				DOMINIO2=$( fgrep "Subject Alternative Name:" ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
 
@@ -370,16 +370,17 @@ REPORT="${DIR}/${2}.report.txt"
 
 		else
 
-			echo "${1} ${2}.htb" | sudo tee -a /etc/hosts > /dev/null
+			if $(fgrep ${1} /etc/hosts > /dev/null) ; then echo "${1} ${2}.htb ya existe en /etc/hosts" ; else echo "${1} ${2}.htb" | sudo tee -a /etc/hosts > /dev/null ; fi
 
 		fi
 
 
-		[ fgrep HTTPD ${2}.nmap > /dev/null ] || [ fgrep httpd ${2}.nmap > /dev/null ] || [ fgrep Apache ${2}.nmap > /dev/null ] || [ fgrep IIS ${2}.nmap > /dev/null ] || [ fgrep apache ${2}.nmap > /dev/null ] || [ fgrep iis ${2}.nmap > /dev/null ]
+		for a in HTTPD httpd Apache IIS apache iis nginx Nginx ; do fgrep ${a} ${2}.nmap > /dev/null; done
 
-		if [[ ${?} ]]; then
 
-			if [[ $(fgrep "80/tcp" ${2}.nmap > /dev/null) ]]; then
+		if ${?} ; then
+
+			if $(fgrep "80/tcp" ${2}.nmap > /dev/null); then
 
 				URL="http://"${1}":80/";
 
@@ -388,7 +389,7 @@ REPORT="${DIR}/${2}.report.txt"
 
 			fi
 
-			if [[ $(fgrep "8080/tcp" ${2}.nmap > /dev/null) ]]; then
+			if $(fgrep "8080/tcp" ${2}.nmap > /dev/null); then
 
 				URL2="http://"${1}":8080/";
 
@@ -396,7 +397,7 @@ REPORT="${DIR}/${2}.report.txt"
 
 			fi
 
-			if [[ $(fgrep "443/tcp" ${2}.nmap > /dev/null) ]]; then
+			if $(fgrep "443/tcp" ${2}.nmap > /dev/null); then
 
 				URL3="https://"${1}":443/";
 
@@ -409,11 +410,11 @@ REPORT="${DIR}/${2}.report.txt"
 
 		echo  estamos examinando los directorios de la pagina web, por favor espere...
 
-		sudo gobuster dir --url ${URL} -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -k -o ${2}.gobuster.txt;
+		sudo gobuster dir --url ${URL} -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o ${2}.gobuster.txt -k ;
 
 		echo -e " \r\n \r\n " | tee --append ${REPORT};
 
-		cat ${2}.gobuster.txt >> ${REPORT};
+		[[ -f ${2}.gobuster.txt ]] && cat ${2}.gobuster.txt >> ${REPORT};
 
 		sudo nikto -update;
 
@@ -424,10 +425,11 @@ REPORT="${DIR}/${2}.report.txt"
 		echo -e " \r\n \r\n " | tee --append  ${REPORT};
 
 
-		[ fgrep Wordpress ${2}.nmap > /dev/null ] || [ fgrep WordPress ${2}.nmap > /dev/null ] || [ fgrep wordpress ${2}.nmap > /dev/null ] || [ fgrep wordPress ${2}.nmap > /dev/null ]
+
+		for i in Wordpress WordPress wordpress; do fgrep ${i} ${2}.nmap > /dev/null; done
 
 
-		if [[ ${?} ]]; then
+		if ${?} ; then
 
 		        sudo wpscan --url ${URL} --enumerate p | tee --append ${REPORT};
 			echo -e " \r\n \r\n " | tee --append ${REPORT};
