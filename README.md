@@ -1,4 +1,4 @@
-Comando para habilitar configuración en zsh.
+Comandos para habilitar configuración en zsh.
 
 Ojo no hagas esto con root
 Hazlo con Kali
@@ -54,6 +54,8 @@ desde configuracion en tu  emulador de terminal debes de configurar la fuente ha
 https://github.com/Sn0wFreeze/.ZSHRC/blob/main/qterminal.png
 
 favor colocar el archivo *.opvn en la carpeta Documents para que el comando htb funcione correctamente.
+
+
 
 y listo!!
 
