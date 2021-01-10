@@ -356,13 +356,13 @@ REPORT="${DIR}/${2}.report.txt"
 
 		if [[ $(fgrep commonName ${REPORT} > /dev/null) ]]; then
 
-			DOMINIO= $( fgrep commonName ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
+			DOMINIO=$( fgrep commonName ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
 
 			echo 'hemos detectado algo de interes, si es un dominio utiliza el comando (sudo echo ${1} ${DOMINIO} >> /etc/hosts)' | tee --append ${REPORT};
 
 			if [[ $(fgrep "Subject Alternative Name:" ${REPORT} > /dev/null) ]]; then
 
-				DOMINIO2= $( fgrep "Subject Alternative Name:" ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
+				DOMINIO2=$( fgrep "Subject Alternative Name:" ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
 
 				echo 'hemos detectado algo, si es un subdominio utiliza el comando (sudo echo ${1} ${DOMINIO2} >> /etc/hosts)' | tee --append ${REPORT};
 
@@ -375,7 +375,7 @@ REPORT="${DIR}/${2}.report.txt"
 		fi
 
 
-		[ fgrep HTTPD ${2}.nmap > /dev/null || fgrep httpd ${2}.nmap > /dev/null ||  fgrep Apache ${2}.nmap > /dev/null || fgrep IIS ${2}.nmap > /dev/null || fgrep apache ${2}.nmap > /dev/null || fgrep iis ${2}.nmap > /dev/null ]
+		[[ fgrep HTTPD ${2}.nmap > /dev/null ]] || [[ fgrep httpd ${2}.nmap > /dev/null ]] || [[ fgrep Apache ${2}.nmap > /dev/null ]] || [[ fgrep IIS ${2}.nmap > /dev/null ]] || [[ fgrep apache ${2}.nmap > /dev/null ]] || [[ fgrep iis ${2}.nmap > /dev/null ]]
 
 		if [[ ${?} ]]; then
 
@@ -424,7 +424,7 @@ REPORT="${DIR}/${2}.report.txt"
 		echo -e " \r\n \r\n " | tee --append  ${REPORT};
 
 
-		[ fgrep Wordpress ${2}.nmap > /dev/null || fgrep WordPress ${2}.nmap > /dev/null || fgrep wordpress ${2}.nmap > /dev/null || fgrep wordPress ${2}.nmap > /dev/null ]
+		[[ fgrep Wordpress ${2}.nmap > /dev/null ]] || [[ fgrep WordPress ${2}.nmap > /dev/null ]] || [[ fgrep wordpress ${2}.nmap > /dev/null ]] || [[ fgrep wordPress ${2}.nmap > /dev/null ]]
 
 
 		if [[ ${?} ]]; then
