@@ -374,7 +374,10 @@ REPORT="${DIR}/${2}.report.txt"
 
 		fi
 
-		if [[ $(fgrep HTTPD ${2}.nmap > /dev/null || fgrep httpd ${2}.nmap > /dev/null ||  fgrep Apache ${2}.nmap > /dev/null || fgrep IIS ${2}.nmap > /dev/null || fgrep apache ${2}.nmap > /dev/null || fgrep iis ${2}.nmap > /dev/null) ]]; then
+
+		[ fgrep HTTPD ${2}.nmap > /dev/null || fgrep httpd ${2}.nmap > /dev/null ||  fgrep Apache ${2}.nmap > /dev/null || fgrep IIS ${2}.nmap > /dev/null || fgrep apache ${2}.nmap > /dev/null || fgrep iis ${2}.nmap > /dev/null ]
+
+		if [[ ${?} ]]; then
 
 			if [[ $(fgrep "80/tcp" ${2}.nmap > /dev/null) ]]; then
 
@@ -421,7 +424,10 @@ REPORT="${DIR}/${2}.report.txt"
 		echo -e " \r\n \r\n " | tee --append  ${REPORT};
 
 
-		if [[ $(fgrep Wordpress ${2}.nmap > /dev/null || fgrep WordPress ${2}.nmap > /dev/null || fgrep wordpress ${2}.nmap > /dev/null || fgrep wordPress ${2}.nmap > /dev/null) ]]; then
+		[ fgrep Wordpress ${2}.nmap > /dev/null || fgrep WordPress ${2}.nmap > /dev/null || fgrep wordpress ${2}.nmap > /dev/null || fgrep wordPress ${2}.nmap > /dev/null ]
+
+
+		if [[ ${?} ]]; then
 
 		        sudo wpscan --url ${URL} --enumerate p | tee --append ${REPORT};
 			echo -e " \r\n \r\n " | tee --append ${REPORT};
@@ -435,7 +441,7 @@ REPORT="${DIR}/${2}.report.txt"
 	cd ${OLDDIR} && cat ${REPORT};
 else
 
-	echo aun no has proporcionado ningun parametro o numero de parametros incorrecto. 
+	echo aun no has proporcionado ningun parametro o numero de parametros incorrecto.
 
 fi
 
