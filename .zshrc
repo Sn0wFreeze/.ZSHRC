@@ -235,13 +235,13 @@ function man() {
     LESS_TERMCAP_so=$'\e[01;44;33m' \
     LESS_TERMCAP_ue=$'\e[0m' \
     LESS_TERMCAP_us=$'\e[01;32m' \
-    man "$@"
+    man "${@}"
 }
 
 # fzf improvement
 function fzf-lovely(){
 
-	if [ "$1" = "h" ]; then
+	if [ "${1}" = "h" ]; then
 		fzf -m --reverse --preview-window down:20 --preview '[[ $(file --mime {}) =~ binary ]] &&
  	                echo {} is a binary file ||
 	                 (bat --style=numbers --color=always {} ||
@@ -302,7 +302,7 @@ function outside(){
 
 function htb(){
 
-if ! $(ip add show tun0 >> /dev/null); then
+if ! $(ip add show tun0 > /dev/null); then
 
 	sudo openvpn --config ${HOME}/Documents/*.ovpn --daemon
 
@@ -312,7 +312,7 @@ if ! $(ip add show tun0 >> /dev/null); then
 
 	else
 
-		echo "La vpn aun no ha subido, por favor volver ejecutar comando htb nuevamente."
+		echo "La vpn aun no ha subido, puede ser que el archivo *.opvn no esta en la ruta ${HOME}/Documents. Por favor volver ejecutar comando htb nuevamente."
 
 	fi
 
@@ -329,16 +329,16 @@ fi
 
 function autopwn(){
 
-if [ ${#} -eq 2 ]; then
+if [[ ${#} -eq 2 ]]; then
 
 OLDDIR=$(pwd)
 
-DIR= $("${HOME}/Documents/${2}")
+DIR="${HOME}/Documents/${2}"
 
-REPORT= $("${DIR}/${2}.report.txt")
+REPORT="${DIR}/${2}.report.txt"
 
 
-	if [ -d ${DIR} ]; then
+	if [[ -d ${DIR} ]]; then
 
 		echo la carpeta ${2} ya existe.
 
@@ -354,13 +354,13 @@ REPORT= $("${DIR}/${2}.report.txt")
 
 		sudo nmap -A -Pn -sS -sV -oA ${2} --script default,vuln ${1} | tee --append ${REPORT};
 
-		if [ $(fgrep commonName ${REPORT} > /dev/null) ]; then
+		if [[ $(fgrep commonName ${REPORT} > /dev/null) ]]; then
 
 			DOMINIO= $( fgrep commonName ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
 
 			echo 'hemos detectado algo de interes, si es un dominio utiliza el comando (sudo echo ${1} ${DOMINIO} >> /etc/hosts)' | tee --append ${REPORT};
 
-			if [ $(fgrep "Subject Alternative Name:" ${REPORT} > /dev/null) ]; then
+			if [[ $(fgrep "Subject Alternative Name:" ${REPORT} > /dev/null) ]]; then
 
 				DOMINIO2= $( fgrep "Subject Alternative Name:" ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
 
@@ -370,13 +370,13 @@ REPORT= $("${DIR}/${2}.report.txt")
 
 		else
 
-			sudo echo "${1} ${2}.htb" >> /etc/hosts
+			echo "${1} ${2}.htb" | sudo tee -a /etc/hosts > /dev/null
 
 		fi
 
-		if [ $(fgrep HTTPD ${2}.nmap > /dev/null || fgrep httpd ${2}.nmap > /dev/null ||  fgrep Apache ${2}.nmap > /dev/null || fgrep IIS ${2}.nmap > /dev/null || fgrep apache ${2}.nmap > /dev/null || fgrep iis ${2}.nmap > /dev/null) ]; then
+		if [[ $(fgrep HTTPD ${2}.nmap > /dev/null || fgrep httpd ${2}.nmap > /dev/null ||  fgrep Apache ${2}.nmap > /dev/null || fgrep IIS ${2}.nmap > /dev/null || fgrep apache ${2}.nmap > /dev/null || fgrep iis ${2}.nmap > /dev/null) ]]; then
 
-			if [ $(fgrep "80/tcp" ${2}.nmap > /dev/null) ]; then
+			if [[ $(fgrep "80/tcp" ${2}.nmap > /dev/null) ]]; then
 
 				URL="http://"${1}":80/";
 
@@ -385,7 +385,7 @@ REPORT= $("${DIR}/${2}.report.txt")
 
 			fi
 
-			if [ $(fgrep "8080/tcp" ${2}.nmap > /dev/null) ]; then
+			if [[ $(fgrep "8080/tcp" ${2}.nmap > /dev/null) ]]; then
 
 				URL2="http://"${1}":8080/";
 
@@ -393,7 +393,7 @@ REPORT= $("${DIR}/${2}.report.txt")
 
 			fi
 
-			if [ $(fgrep "443/tcp" ${2}.nmap > /dev/null) ]; then
+			if [[ $(fgrep "443/tcp" ${2}.nmap > /dev/null) ]]; then
 
 				URL3="https://"${1}":443/";
 
@@ -421,7 +421,7 @@ REPORT= $("${DIR}/${2}.report.txt")
 		echo -e " \r\n \r\n " | tee --append  ${REPORT};
 
 
-		if [ $(fgrep Wordpress ${2}.nmap > /dev/null || fgrep WordPress ${2}.nmap > /dev/null || fgrep wordpress ${2}.nmap > /dev/null || fgrep wordPress ${2}.nmap > /dev/null) ]; then
+		if [[ $(fgrep Wordpress ${2}.nmap > /dev/null || fgrep WordPress ${2}.nmap > /dev/null || fgrep wordpress ${2}.nmap > /dev/null || fgrep wordPress ${2}.nmap > /dev/null) ]]; then
 
 		        sudo wpscan --url ${URL} --enumerate p | tee --append ${REPORT};
 			echo -e " \r\n \r\n " | tee --append ${REPORT};
@@ -448,4 +448,3 @@ source ${ZSH}/custom/themes/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ -f ${ZSH}/custom/themes/powerlevel10k/.p10k.zsh ]] && source ${ZSH}/custom/themes/powerlevel10k/.p10k.zsh
-
