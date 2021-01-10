@@ -375,7 +375,7 @@ REPORT="${DIR}/${2}.report.txt"
 		fi
 
 
-		[[ fgrep HTTPD ${2}.nmap > /dev/null ]] || [[ fgrep httpd ${2}.nmap > /dev/null ]] || [[ fgrep Apache ${2}.nmap > /dev/null ]] || [[ fgrep IIS ${2}.nmap > /dev/null ]] || [[ fgrep apache ${2}.nmap > /dev/null ]] || [[ fgrep iis ${2}.nmap > /dev/null ]]
+		[ fgrep HTTPD ${2}.nmap > /dev/null ] || [ fgrep httpd ${2}.nmap > /dev/null ] || [ fgrep Apache ${2}.nmap > /dev/null ] || [ fgrep IIS ${2}.nmap > /dev/null ] || [ fgrep apache ${2}.nmap > /dev/null ] || [ fgrep iis ${2}.nmap > /dev/null ]
 
 		if [[ ${?} ]]; then
 
@@ -424,7 +424,7 @@ REPORT="${DIR}/${2}.report.txt"
 		echo -e " \r\n \r\n " | tee --append  ${REPORT};
 
 
-		[[ fgrep Wordpress ${2}.nmap > /dev/null ]] || [[ fgrep WordPress ${2}.nmap > /dev/null ]] || [[ fgrep wordpress ${2}.nmap > /dev/null ]] || [[ fgrep wordPress ${2}.nmap > /dev/null ]]
+		[ fgrep Wordpress ${2}.nmap > /dev/null ] || [ fgrep WordPress ${2}.nmap > /dev/null ] || [ fgrep wordpress ${2}.nmap > /dev/null ] || [ fgrep wordPress ${2}.nmap > /dev/null ]
 
 
 		if [[ ${?} ]]; then
