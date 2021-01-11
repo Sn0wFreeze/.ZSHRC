@@ -379,16 +379,16 @@ REPORT="${DIR}/${2}.report.txt"
 			do
 			if $(fgrep ${a} ${2}.nmap > /dev/null); then
 
-				break
+				break;
 			else
 
-				continue
+				continue;
 
 			fi
 		done
 
 
-		if ${?} ; then
+		if [[ ${?} -eq 0 ]]; then
 
 			if $(fgrep "80/tcp" ${2}.nmap > /dev/null); then
 
@@ -440,16 +440,16 @@ REPORT="${DIR}/${2}.report.txt"
 			do
                         if $(fgrep ${i} ${2}.nmap > /dev/null); then
 
-                                break
+                                break;
                         else
 
-                                continue
+                                continue;
 
                         fi
                 done
 
 
-		if ${?} ; then
+		if [[ ${?} -eq 0 ]]; then
 
 		        sudo wpscan --url ${URL} --enumerate p | tee --append ${REPORT};
 			echo -e " \r\n \r\n " | tee --append ${REPORT};
