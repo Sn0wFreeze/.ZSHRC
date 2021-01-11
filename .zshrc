@@ -358,13 +358,13 @@ REPORT="${DIR}/${2}.report.txt"
 
 			DOMINIO=$( fgrep commonName ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
 
-			echo 'hemos detectado algo de interes, si es un dominio utiliza el comando (sudo echo ${1} ${DOMINIO} >> /etc/hosts)' | tee --append ${REPORT};
+			echo "\n\a Hemos detectado algo de interes, si es un dominio utiliza el comando (sudo echo ${1} ${DOMINIO} >> /etc/hosts)" | tee --append ${REPORT};
 
 			if $(fgrep "Subject Alternative Name:" ${REPORT} > /dev/null) ; then
 
 				DOMINIO2=$( fgrep "Subject Alternative Name:" ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
 
-				echo 'hemos detectado algo, si es un subdominio utiliza el comando (sudo echo ${1} ${DOMINIO2} >> /etc/hosts)' | tee --append ${REPORT};
+				echo "\n\a Hemos detectado algo, si es un subdominio utiliza el comando (sudo echo ${1} ${DOMINIO2} >> /etc/hosts)" | tee --append ${REPORT};
 
 			fi
 
@@ -395,7 +395,7 @@ REPORT="${DIR}/${2}.report.txt"
 				URL="http://"${1}":80/";
 
 
-                        	echo 'puerto 80 detectado, corriendo un enumerador de directorios a ${2} en ${URL}' | tee --append ${REPORT};
+                        	echo "puerto 80 detectado, corriendo un enumerador de directorios a ${2} en ${URL}" | tee --append ${REPORT};
 
 			fi
 
@@ -403,7 +403,7 @@ REPORT="${DIR}/${2}.report.txt"
 
 				URL2="http://"${1}":8080/";
 
-				echo 'puerto 8080 detectado, favor correr un enumerador de directorios a ${2} en ${URL2}' | tee --append ${REPORT};
+				echo "puerto 8080 detectado, favor correr un enumerador de directorios a ${2} en ${URL2}" | tee --append ${REPORT};
 
 			fi
 
@@ -411,7 +411,7 @@ REPORT="${DIR}/${2}.report.txt"
 
 				URL3="https://"${1}":443/";
 
-				echo 'puerto 443 detectado, favor correr un enumerador de directorios a ${2} en ${URL3}' | tee --append ${REPORT};
+				echo "puerto 443 detectado, favor correr un enumerador de directorios a ${2} en ${URL3}" | tee --append ${REPORT};
 
 			fi
 
