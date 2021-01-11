@@ -375,7 +375,17 @@ REPORT="${DIR}/${2}.report.txt"
 		fi
 
 
-		for a in HTTPD httpd Apache IIS apache iis nginx Nginx ; do fgrep ${a} ${2}.nmap > /dev/null; done
+		for a in HTTPD httpd Apache IIS apache iis nginx Nginx
+			do
+			if $(fgrep ${a} ${2}.nmap > /dev/null); then
+
+				break
+			else
+
+				continue
+
+			fi
+		done
 
 
 		if ${?} ; then
@@ -426,7 +436,17 @@ REPORT="${DIR}/${2}.report.txt"
 
 
 
-		for i in Wordpress WordPress wordpress; do fgrep ${i} ${2}.nmap > /dev/null; done
+		for i in Wordpress WordPress wordpress
+			do
+                        if $(fgrep ${i} ${2}.nmap > /dev/null); then
+
+                                break
+                        else
+
+                                continue
+
+                        fi
+                done
 
 
 		if ${?} ; then
