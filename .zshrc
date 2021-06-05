@@ -158,8 +158,8 @@ plugins=(
   git-prompt
   git
   gitfast
-  emacs
   cp
+  tmux
   common-aliases
   command-not-found
   colored-man-pages
@@ -211,15 +211,15 @@ alias ll='lsd -lh --group-dirs=first'
 alias la='lsd -a --group-dirs=first'
 alias l='lsd --group-dirs=first'
 alias lla='lsd -lha --group-dirs=first'
-alias ls='lsd --group-dirs=first'
+alias ls='lsd --group-dirs=first --human-readable --timesort'
+alias tree='lsd --tree -latr'
 alias cat='bat --paging=never'
-alias zshconfig="nano ${HOME}/.zshrc"
-alias hostedit="sudo nano /etc/hosts"
-alias dnsorden="sudo nano /etc/nsswitch.conf"
-alias dnsedit="sudo nano /etc/resolv.conf"
-alias intedit="sudo nano /etc/network/interfaces"
-
-
+alias zshconfig="vim ${HOME}/.zshrc"
+alias hostedit="sudo vim /etc/hosts"
+alias dnsorden="sudo vim /etc/nsswitch.conf"
+alias dnsedit="sudo vim /etc/resolv.conf"
+alias intedit="sudo vim /etc/network/interfaces"
+alias grep="grep --color=auto"
 
 
 [ -f ${ZSH}/plugins/fzf/fzf.plugin.zsh ] && source ${ZSH}/plugins/fzf/fzf.plugin.zsh
@@ -302,29 +302,161 @@ function outside(){
 
 function htb(){
 
-if ! $(ip add show tun0 > /dev/null); then
+    if [[ ! $(ip add show tun0) > /dev/null ]]; then
 
-	sudo openvpn --config ${HOME}/Documents/*.ovpn --daemon
+	      sudo openvpn --config ${HOME}/Documents/*.ovpn --daemon
 
-	if [[ $(ip add show tun0 > /dev/null) ]]; then
+        if [[ $(ip add show tun0) > /dev/null ]]; then
 
-		echo "Tu ip de hackthebox.eu es \e[2;32m $(ip add show tun0 | grep 'inet ' | awk -F " " '{ print $2 }')\e[0m"
+		          echo "Tu ip de hackthebox.eu es \e[2;32m $(ip add show tun0 | grep 'inet ' | awk -F " " '{ print $2 }')\e[0m"
 
-	else
+	      else
 
-		echo "La vpn aun no ha subido, puede ser que el archivo *.opvn no esta en la ruta ${HOME}/Documents. Por favor volver ejecutar comando htb nuevamente."
+		          echo "La vpn aun no ha subido, puede ser que el archivo *.opvn no esta en la ruta ${HOME}/Documents. Por favor volver ejecutar comando htb nuevamente."
 
-	fi
+	      fi
 
-else
+    else
 
-       echo "La vpn ya ha subido, tu ip de hackthebox.eu es \e[2;32m $(ip add show tun0 | grep 'inet ' | awk -F " " '{ print $2 }')\e[0m"
+          echo "La vpn ya ha subido, tu ip de hackthebox.eu es \e[2;32m $(ip add show tun0 | grep 'inet ' | awk -F " " '{ print $2 }')\e[0m"
 
-fi
+    fi
 
 
 }
 
+
+function OS_Discovery(){
+
+declare -A OS
+
+OS[64]='Linux'
+OS[128]='Windows'
+OS[254]='Solaris'
+
+for a in ${@}; do
+
+    TTL=$(ping -c 1 ${a} | egrep ttl | awk '{ print $6 }'| sed -e 's/ttl=//g');                                                                                    
+                                                                                                                                    
+
+    case ${TTL} in
+
+            <1-64>)
+
+                    echo "El sistema operativo en ${a} es ${OS[64]}.";;
+
+          <65-128>)
+
+                    echo "El sistema operativo en ${a} es ${OS[128]}.";;
+
+         <129-254>)
+
+                    echo "El sistema operativo en ${a} es ${OS[254]}.";;
+
+                 *)
+
+                    echo "El sistema operativo en ${a} no se ha podido identificar.";;
+
+    esac
+
+    unset TTL;
+
+done
+
+unset a;
+
+}
+
+
+function WebWrap(){                                                                                                                                                                                                                                     
+
+	for z in $(egrep ${2}.nmap | cut -d " " -f1 | tr -d '[A-Z]|[a-z]/'); do
+      
+				                                                                                                                   
+			    if [[ ${z} != "443/tcp" ]]; then URL="http://"${1}":$(echo ${z} | sed -e 's/\/tcp//g')/"; else URL="https://"${1}":$(echo ${z} | sed -e 's/\/tcp//g')/" fi
+
+          whatweb ${URL} | tee --append ${3};
+		                                                                                                               
+			    echo "puerto $(echo ${z} | sed -e 's/\/tcp//g') detectado, corriendo un enumerador de directorios a ${2} en ${URL}" | tee --append ${3};          
+				                                                                                                                  
+			    echo  estamos examinando los directorios de la pagina web, por favor espere...                                         
+				                                                                                                                   
+			    #sudo gobuster dir --url ${URL} -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o ${2}.gobuster.txt -k
+          sudo dirsearch -u ${URL} -e .htaccess,txt,php,pdf,zip,md,log,htm,html,xhtml,asp,aspx,tar,tar.gz,jsp,war,jar,js,css -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 100 --skip-on-status=404,401,403,405,406,408 --format plain -o ${2}.dirsearch.txt;
+
+				                                                                                                                   
+			    echo -e " \r\n \r\n " | tee --append ${3};                                                                        
+				                                                                                                                   
+			    [[ -f ${2}.dirsearch.txt ]] && cat ${2}.dirsearch.txt >> ${3};                                                      
+				                                                                                                                   
+			    sudo nikto -update;                                                                                                    
+				                                                                                                                   
+			    echo -e " \r\n \r\n " | tee --append ${3};                                                                        
+				                                                                                                                   
+			    sudo nikto -host ${URL} | tee --append ${3};                                                                      
+				                                                                                                                   
+			    echo -e " \r\n \r\n " | tee --append  ${3};
+
+
+		for i in Wordpress WordPress wordpress wordPress; do 
+				                                                                                                        
+			if $(fgrep ${i} ${2}.nmap > /dev/null); then                                                                                                                                                                   
+				                                                                                                                   
+				  sudo wpscan --url ${URL} --enumerate p | tee --append ${3};                                                     
+				  echo -e " \r\n \r\n " | tee --append ${3};         
+				                                                                                                                                                              
+			      break;                                                                                                                  
+				                                                                                                                   
+			 else                                                                                                                       
+				                                                                                                                   
+			      continue;                                                                                                                
+				                                                                                                                  
+			 fi                                                                                                                         
+				                                                                                                                  
+		done                                                                                                                         
+		
+    unset i
+
+    for k in Drupal drupal; do 
+      
+      if $(fgrep ${k} ${2}.nmap > /dev/null); then
+
+        sudo droopescan scan moodle -u ${URL} -t 10 | tee --append ${3};
+        echo -e " \r\n \r\n " | tee --append ${3};
+        break;        
+    
+      else
+       
+        continue;
+      
+      fi
+  
+    done  
+
+		unset k
+
+    for k in Moodle moodle; do
+
+      if $(fgrep ${k} ${2}.nmap > /dev/null); then
+  
+        sudo python3 /home/kali/Tools/moodlescan/moodlescan.py -k -u ${URL} | tee --append ${3};
+        echo -e " \r\n \r\n " | tee --append ${3};
+        break;
+  
+      else
+  
+         continue;
+ 
+      fi
+ 
+    done
+
+
+	done
+
+	unset URL
+	unset z
+}
 
 
 function autopwn(){
@@ -333,38 +465,52 @@ if [[ ${#} -eq 2 ]]; then
 
 OLDDIR=$(pwd)
 
-DIR="${HOME}/Documents/${2}"
+DIR="${HOME}/Documents/Machines/${2}"
 
-REPORT="${DIR}/${2}.report.txt"
+REPORT="${DIR}/report/${2}.report.txt"
 
 
 	if [[ -d ${DIR} ]]; then
 
-		echo la carpeta ${2} ya existe.
+		echo el proyecto ${2} ya existe.
 
 	else
 
-		mkdir -p ${DIR}
+    echo creando el proyecto ${2} en ${HOME}/Documents/.
+    
+    mkdir -vp ${DIR}/scripts
 
-		echo creando la carpeta ${2} en ${HOME}/Documents/.
+    mkdir -vp ${DIR}/files
+
+    mkdir -vp ${DIR}/report
 
 	fi
 
 		cd ${DIR}
+    
+    OS_Discovery ${1} | tee --append ${REPORT};
 
-		sudo nmap -A -Pn -sS -sV -oA ${2} --script default,vuln ${1} | tee --append ${REPORT};
+    echo -e " \r\n \r\n " | tee --append ${REPORT};
+
+		sudo nmap -vvvv -A -Pn -sS -sV -oA ${2} --script default,vuln ${1} | tee --append ${REPORT};
+
+    sleep 2s
 
 		if $(fgrep commonName ${REPORT} > /dev/null); then
 
-			DOMINIO=$( fgrep commonName ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
+			DOMINIO=$( fgrep commonName ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//g' )
 
 			echo "\n\a Hemos detectado algo de interes, si es un dominio utiliza el comando (sudo echo ${1} ${DOMINIO} >> /etc/hosts)" | tee --append ${REPORT};
+      
+      unset DOMINIO
 
 			if $(fgrep "Subject Alternative Name:" ${REPORT} > /dev/null) ; then
 
-				DOMINIO2=$( fgrep "Subject Alternative Name:" ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//' )
+				DOMINIO2=$( fgrep "Subject Alternative Name:" ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//g' )
 
 				echo "\n\a Hemos detectado algo, si es un subdominio utiliza el comando (sudo echo ${1} ${DOMINIO2} >> /etc/hosts)" | tee --append ${REPORT};
+
+        unset DOMINIO2
 
 			fi
 
@@ -374,89 +520,26 @@ REPORT="${DIR}/${2}.report.txt"
 
 		fi
 
+    sleep 2s
 
-		for a in HTTPD httpd Apache IIS apache iis nginx Nginx
-			do
-			if $(fgrep ${a} ${2}.nmap > /dev/null); then
+		for a in HTTPD httpd Apache IIS apache iis nginx Nginx; do
+			if $(fgrep ${a} ${REPORT} > /dev/null); then
 
-				break;
+				echo "Tecnologia ${a} encontrada!" | tee --append ${REPORT};
+        WebWrap ${1} ${2} ${REPORT};
+        break;
+
 			else
 
-				continue;
+				echo "Tecnologia no identificada!" | tee --append ${REPORT};
+        continue;
 
 			fi
 		done
 
+    unset a
 
-		if [[ ${?} -eq 0 ]]; then
-
-			if $(fgrep "80/tcp" ${2}.nmap > /dev/null); then
-
-				URL="http://"${1}":80/";
-
-
-                        	echo "puerto 80 detectado, corriendo un enumerador de directorios a ${2} en ${URL}" | tee --append ${REPORT};
-
-			fi
-
-			if $(fgrep "8080/tcp" ${2}.nmap > /dev/null); then
-
-				URL2="http://"${1}":8080/";
-
-				echo "puerto 8080 detectado, favor correr un enumerador de directorios a ${2} en ${URL2}" | tee --append ${REPORT};
-
-			fi
-
-			if $(fgrep "443/tcp" ${2}.nmap > /dev/null); then
-
-				URL3="https://"${1}":443/";
-
-				echo "puerto 443 detectado, favor correr un enumerador de directorios a ${2} en ${URL3}" | tee --append ${REPORT};
-
-			fi
-
-
-		echo -e " \r\n \r\n " | tee --append ${REPORT};
-
-		echo  estamos examinando los directorios de la pagina web, por favor espere...
-
-		sudo gobuster dir --url ${URL} -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o ${2}.gobuster.txt -k ;
-
-		echo -e " \r\n \r\n " | tee --append ${REPORT};
-
-		[[ -f ${2}.gobuster.txt ]] && cat ${2}.gobuster.txt >> ${REPORT};
-
-		sudo nikto -update;
-
-		echo -e " \r\n \r\n " | tee --append ${REPORT};
-
-		sudo nikto -host ${URL} | tee --append ${REPORT};
-
-		echo -e " \r\n \r\n " | tee --append  ${REPORT};
-
-
-
-		for i in Wordpress WordPress wordpress
-			do
-                        if $(fgrep ${i} ${2}.nmap > /dev/null); then
-
-                                break;
-                        else
-
-                                continue;
-
-                        fi
-                done
-
-
-		if [[ ${?} -eq 0 ]]; then
-
-		        sudo wpscan --url ${URL} --enumerate p | tee --append ${REPORT};
-			echo -e " \r\n \r\n " | tee --append ${REPORT};
-		fi
-
-
-		fi
+    echo -e " \r\n \r\n " | tee --append ${REPORT};                                                                     
 
 		searchsploit --nmap ${2}.xml | tee --append ${REPORT};
 
@@ -467,6 +550,10 @@ else
 
 fi
 
+unset OLDDIR                                                                                                                                                                                                                                                
+unset DIR
+unset REPORT
+
 }
 
 
@@ -476,3 +563,10 @@ source ${ZSH}/custom/themes/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ -f ${ZSH}/custom/themes/powerlevel10k/.p10k.zsh ]] && source ${ZSH}/custom/themes/powerlevel10k/.p10k.zsh
+
+#tmux -2
+
+tmux new -s HTB$(date | awk '{ print $5 }'| cut -c 7-8)
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+export PATH="${PATH}:/home/kali/.cargo/bin"
