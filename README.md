@@ -81,3 +81,5 @@ hostedit
 dnsorden
 dnsedit
 intedit
+
+gracias a s4vitar, ya que su trabajo me sirvio como base.
