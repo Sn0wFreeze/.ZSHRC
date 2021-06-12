@@ -220,6 +220,7 @@ alias dnsorden="sudo vim /etc/nsswitch.conf"
 alias dnsedit="sudo vim /etc/resolv.conf"
 alias intedit="sudo vim /etc/network/interfaces"
 alias grep="grep --color=auto"
+alias burp="${HOME}/Tools/jdk-15.0.2/bin/burp.sh"
 
 
 [ -f ${ZSH}/plugins/fzf/fzf.plugin.zsh ] && source ${ZSH}/plugins/fzf/fzf.plugin.zsh
@@ -269,14 +270,14 @@ function rmk(){
 
 function upgrade(){
 
-    sudo apt update && sudo apt -y full-upgrade && sudo updatedb && sudo apt -y autoremove && sudo apt clean
+  sudo apt update && sudo apt -y full-upgrade && sudo updatedb && sudo apt -y autoremove && sudo apt clean
 
 }
 
 
 function update(){
 
-	sudo apt update && sudo apt -y upgrade && sudo updatedb && sudo apt -y autoremove && sudo apt clean
+  sudo apt update && sudo apt -y upgrade && sudo updatedb && sudo apt -y autoremove && sudo apt clean
 
 }
 
@@ -370,19 +371,19 @@ unset a;
 
 function WebWrap(){                                                                                                                                                                                                                                     
 
-	for z in $(egrep ${2}.nmap | cut -d " " -f1 | tr -d '[A-Z]|[a-z]/'); do
+	for z in $(egrep tcp ${2}.nmap | egrep http | cut -d " " -f1 | tr -d '[A-Z]|[a-z]/'| egrep '^[0-9]|[0-9]$'); do
       
 				                                                                                                                   
-			    if [[ ${z} != "443/tcp" ]]; then URL="http://"${1}":$(echo ${z} | sed -e 's/\/tcp//g')/"; else URL="https://"${1}":$(echo ${z} | sed -e 's/\/tcp//g')/" fi
+			    if [[ ${z} != "443" ]]; then URL="http://"${1}":${z}/"; else URL="https://"${1}":${z}/" fi
 
           whatweb ${URL} | tee --append ${3};
 		                                                                                                               
-			    echo "puerto $(echo ${z} | sed -e 's/\/tcp//g') detectado, corriendo un enumerador de directorios a ${2} en ${URL}" | tee --append ${3};          
+			    echo "puerto ${z} detectado, corriendo un enumerador de directorios a ${2} en ${URL}" | tee --append ${3};          
 				                                                                                                                  
 			    echo  estamos examinando los directorios de la pagina web, por favor espere...                                         
 				                                                                                                                   
 			    #sudo gobuster dir --url ${URL} -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o ${2}.gobuster.txt -k
-          sudo dirsearch -u ${URL} -e .htaccess,txt,php,pdf,zip,md,log,htm,html,xhtml,asp,aspx,tar,tar.gz,jsp,war,jar,js,css -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 100 --skip-on-status=404,401,403,405,406,408 --format plain -o ${2}.dirsearch.txt;
+          sudo dirsearch -u ${URL} -e py,txt,php,pdf,zip,md,log,htm,html,xhtml,asp,aspx,tar,tar.gz,jsp,war,jar,js,css -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 100 --skip-on-status=404 --format plain -o ${2}.dirsearch.txt;
 
 				                                                                                                                   
 			    echo -e " \r\n \r\n " | tee --append ${3};                                                                        
@@ -393,7 +394,7 @@ function WebWrap(){
 				                                                                                                                   
 			    echo -e " \r\n \r\n " | tee --append ${3};                                                                        
 				                                                                                                                   
-			    sudo nikto -host ${URL} | tee --append ${3};                                                                      
+			    sudo nikto -host ${URL} -C all | tee --append ${3};                                                                      
 				                                                                                                                   
 			    echo -e " \r\n \r\n " | tee --append  ${3};
 
@@ -435,9 +436,9 @@ function WebWrap(){
 
 		unset k
 
-    for k in Moodle moodle; do
+    for f in Moodle moodle; do
 
-      if $(fgrep ${k} ${2}.nmap > /dev/null); then
+      if $(fgrep ${f} ${2}.nmap > /dev/null); then
   
         sudo python3 /home/kali/Tools/moodlescan/moodlescan.py -k -u ${URL} | tee --append ${3};
         echo -e " \r\n \r\n " | tee --append ${3};
@@ -451,6 +452,7 @@ function WebWrap(){
  
     done
 
+    unset f
 
 	done
 
@@ -496,19 +498,19 @@ REPORT="${DIR}/report/${2}.report.txt"
 
     sleep 2s
 
-		if $(fgrep commonName ${REPORT} > /dev/null); then
+		if $(egrep commonName ${2}.nmap > /dev/null); then
 
-			DOMINIO=$( fgrep commonName ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//g' )
+			DOMINIO=$( egrep commonName ${2}.nmap | awk -F: '{print $3}'| sed -e 's/commonName=//g' )
 
-			echo "\n\a Hemos detectado algo de interes, si es un dominio utiliza el comando (sudo echo ${1} ${DOMINIO} >> /etc/hosts)" | tee --append ${REPORT};
+			echo "\n\a Hemos detectado algo de interes, si es un dominio utiliza el comando (sudo echo ${1} ${2}.htb >> /etc/hosts)" | tee --append ${REPORT};
       
       unset DOMINIO
 
-			if $(fgrep "Subject Alternative Name:" ${REPORT} > /dev/null) ; then
+			if $(egrep "Subject Alternative Name:" ${2}.nmap > /dev/null) ; then
 
-				DOMINIO2=$( fgrep "Subject Alternative Name:" ${REPORT} | awk -F: '{print $3}'| sed -e 's/commonName=//g' )
+				DOMINIO2=$( egrep "Subject Alternative Name:" ${2}.nmap | awk -F: '{print $3}'| sed -e 's/commonName=//g' )
 
-				echo "\n\a Hemos detectado algo, si es un subdominio utiliza el comando (sudo echo ${1} ${DOMINIO2} >> /etc/hosts)" | tee --append ${REPORT};
+				echo "\n\a Hemos detectado algo, si es un subdominio utiliza el comando (sudo echo ${1} ${2}.htb >> /etc/hosts)" | tee --append ${REPORT};
 
         unset DOMINIO2
 
@@ -522,8 +524,8 @@ REPORT="${DIR}/report/${2}.report.txt"
 
     sleep 2s
 
-		for a in HTTPD httpd Apache IIS apache iis nginx Nginx; do
-			if $(fgrep ${a} ${REPORT} > /dev/null); then
+		for a in HTTPD httpd Apache IIS apache iis nginx Nginx gunicorn Gunicorn; do
+			if $(egrep ${a} ${2}.nmap > /dev/null); then
 
 				echo "Tecnologia ${a} encontrada!" | tee --append ${REPORT};
         WebWrap ${1} ${2} ${REPORT};
@@ -531,7 +533,7 @@ REPORT="${DIR}/report/${2}.report.txt"
 
 			else
 
-				echo "Tecnologia no identificada!" | tee --append ${REPORT};
+				echo "Tecnologia ${a} no encontrada!" | tee --append ${REPORT};
         continue;
 
 			fi
@@ -565,8 +567,7 @@ source ${ZSH}/custom/themes/powerlevel10k/powerlevel10k.zsh-theme
 [[ -f ${ZSH}/custom/themes/powerlevel10k/.p10k.zsh ]] && source ${ZSH}/custom/themes/powerlevel10k/.p10k.zsh
 
 #tmux -2
-
-tmux new -s HTB$(date | awk '{ print $5 }'| cut -c 7-8)
+#tmux new -s HTB$(date | awk '{ print $5 }'| cut -c 7-8)
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 export PATH="${PATH}:/home/kali/.cargo/bin"
