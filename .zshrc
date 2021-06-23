@@ -379,8 +379,8 @@ function WebWrap(){
           whatweb ${URL} | tee --append ${3};
 		                                                                                                               
 			    echo "puerto ${z} detectado, corriendo un enumerador de directorios a ${2} en ${URL}" | tee --append ${3};          
-				                                                                                                                  
-			    echo  estamos examinando los directorios de la pagina web, por favor espere...                                         
+
+          echo -e " \r\n \r\n " | tee --append ${3};
 				                                                                                                                   
 			    #sudo gobuster dir --url ${URL} -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -o ${2}.gobuster.txt -k
           sudo dirsearch -u ${URL} -e py,txt,php,pdf,zip,md,log,htm,html,xhtml,asp,aspx,tar,tar.gz,jsp,war,jar,js,css -f -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -t 100 --skip-on-status=404 --format plain -o ${2}.dirsearch.txt;
@@ -460,6 +460,34 @@ function WebWrap(){
 	unset z
 }
 
+function SmbWrap(){
+
+for h in $(egrep tcp ${2}.nmap | egrep 'smb' | cut -d " " -f1 | tr -d '[A-Z]|[a-z]/'| egrep '^[0-9]|[0-9]$'); do
+
+  smbmap -H ${1} | tee -a ${3}
+
+
+  if $(smbclient -U Anonymous -L //${1} | tee -a ${3}); then
+
+    continue;
+
+  else 
+    
+    if $(smbclient --list //${1}/ -U "" | tee -a ${3}); then
+
+        smbclient --list //${1}/ -N  | tee -a ${3}
+
+    fi
+
+  fi
+
+done
+
+unset h
+
+thunar smb://${1}/
+
+}
 
 function autopwn(){
 
@@ -494,7 +522,7 @@ REPORT="${DIR}/report/${2}.report.txt"
 
     echo -e " \r\n \r\n " | tee --append ${REPORT};
 
-		sudo nmap -vvvv -A -Pn -sS -sV -oA ${2} --script default,vuln ${1} | tee --append ${REPORT};
+		sudo nmap -vvvv -A -Pn -sS -sV -oA ${2} --min-rate 300 --script=default,vuln,http-enum,"smb-vuln*",smb-enum-shares.nse,smb-enum-users.nse ${1} | tee --append ${REPORT};
 
     sleep 2s
 
@@ -540,6 +568,24 @@ REPORT="${DIR}/report/${2}.report.txt"
 		done
 
     unset a
+    
+    for g in smb Smb SMB samba SAMBA Samba; do
+
+      if $(egrep ${g} ${2}.nmap > /dev/null); then
+
+          echo "Tecnologia ${g} encontrada!" | tee --append ${REPORT};
+          SmbWrap ${1} ${2} ${REPORT};
+          break;
+
+      else
+
+          echo "Tecnologia ${a} no encontrada!" | tee --append ${REPORT};
+          continue;
+  
+     fi
+   done
+ 
+   unset g
 
     echo -e " \r\n \r\n " | tee --append ${REPORT};                                                                     
 
